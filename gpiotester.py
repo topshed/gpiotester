@@ -9,16 +9,18 @@ def pressed():
     global p_in
     global buttons
     print('pressed')
-    #print(p_in.value)
+    print(p_in.value)
     i = 0
     for p in p_in.value:
-
+        #print(i)
         if p == 1:
-            print(i)
+            #print(i)
             if buttons[i].bg == 'white':
                 buttons[i].bg = 'green'
             elif buttons[i].bg == 'grey':
                 buttons[i].bg = 'grey'
+            elif buttons[i].bg == 'light grey':
+                buttons[i].bg = 'light grey'
             else:
                 buttons[i].bg = 'white'
         i+=1
@@ -41,7 +43,8 @@ def inoroutchoice(selected_value):
     global mode_old
     global p_out
     global p_in
-    if selected_value == "Input":
+    if selected_value == "Input - pull-up" or selected_value == "Input - pull-down":
+    
         mode = 'input'
         if mode_old == 'output':
             p_out.close()
@@ -49,8 +52,12 @@ def inoroutchoice(selected_value):
             p_in.close()
         mode_old = 'input'
         #p_out.close()
-        if pullup.value == 0:
+        if selected_value == "Input - pull-up":
             p_in = ButtonBoard(2,3,4,14,15,17,18,27,22,23,24,10,9,11,25,8,7,5,6,12,13,19,16,26,20,21)
+            buttons[1].enable()
+            buttons[1].bg = 'green'
+            buttons[0].enable()
+            buttons[0].bg = 'green'
         else:
             p_in = ButtonBoard(4,14,15,17,18,27,22,23,24,10,9,11,25,8,7,5,6,12,13,19,16,26,20,21,pull_up=False)
             buttons[1].disable()
@@ -63,14 +70,22 @@ def inoroutchoice(selected_value):
         i=0
         floaters = []
         for p in p_in.value:
-            #print(p)
+            print(p)
             if p == 1:
                 floaters.append(i)
                 print(i)
                 if buttons[i].bg == 'grey':
                     buttons[i].bg = 'green'
+                elif buttons[i].bg == 'light grey':
+                    buttons[i].bg = 'light grey'
                 else:
                     buttons[i].bg = 'grey'
+            else:
+                if buttons[i].bg == 'light grey':
+                    buttons[i].bg = 'light grey'
+                else:
+                    buttons[i].bg = 'green'
+                
             i+=1
         if len(floaters) > 0:
             app.warn("Possible floaters!", "Found " + str(len(floaters)) + " pins that may be floating high")
@@ -106,13 +121,12 @@ def clicked(pin_index):
     if mode == 'input':
         print(pin_index)
         #warn = Window(app)
-        app.warn("hey!","Clicking on a button doesn't do anything in Input mode. Switch to output mode to change the state of a pin")
+        app.warn("hey!","Clicking on a pin doesn't do anything in Input mode. Switch to output mode to change the state of a pin")
 
         
-app = App(layout='grid',height=920, width = 300)
+app = App(layout='grid',height=920, width = 200)
 label = Text(app, "Select a mode of operation:", grid=[0,0,2,1])
-inorout = Combo(app,options=["Unset", "Input","Output"],grid=[0,1,2,1],command=inoroutchoice)
-pullup = CheckBox(app,grid=[2,1,2,1],text="pull-down")
+inorout = Combo(app,options=["Unset", "Input - pull-up", "Input - pull-down","Output"],grid=[0,1,2,1],command=inoroutchoice)
 #waffle = Waffle(app, command=pin_clicked, height=20, width=2, grid=[1,0,1,20],align='top')
 b1 = PushButton(app, grid=[0,2],align='top',text="3v3",width=6,height=1)
 b1.bg = 'yellow'
